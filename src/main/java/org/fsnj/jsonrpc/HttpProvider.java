@@ -695,8 +695,8 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<AddressAllInfo> allInfoByAddress(String address) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allInfoByAddress").params(new String[]{address}).build();
+    public Rep<AddressAllInfo> allInfoByAddress(String address,String state) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allInfoByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
         Type type = new TypeToken<Rep<AddressAllInfo>>() {

@@ -38,7 +38,7 @@ public class BlockTx {
         private String gasLimit;
         private String from;
         private String gasUsed;
-        private String[] logs;
+        private Object logs;
         private String logsBloom;
         private String transactionIndex;
         private String status;
