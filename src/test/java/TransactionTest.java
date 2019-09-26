@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
@@ -21,11 +22,11 @@ public class TransactionTest {
         TxParams txParams = TxParams.builder().ID("")
             .fromAddr(from)
             .toAddr(to)
-            .nonce("9")
+            .nonce("8")
             .decimal(18)
-            .gasLimit(0.000000000000021)
-            .gasPrice(0.00000005d)
-            .value(0.1)
+            .gasLimit(new BigDecimal("9E-14").doubleValue())
+            .gasPrice(new BigDecimal("1E-9").doubleValue())
+            .value(0.001)
             .data("0x").build();
         Transaction transaction = TransactionFactory.buildTransaction(txParams,new HttpProvider("https://fsn.dev/api"));
         transaction.transfer(ecKey);
