@@ -16,7 +16,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.fsnj.transaction.Transaction;
-import org.fsnj.transaction.TransactionPayload;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -756,29 +755,6 @@ public class HttpProvider {
                 .build();
     }
 
-    public Rep<Transaction> getTransaction(String hash) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("GetTransaction").params(new String[]{hash}).build();
-        Response response = client.newCall(buildRequest(req)).execute();
-        String resultString = Objects.requireNonNull(response.body()).string();
-        Type type = new TypeToken<Rep<Transaction>>() {
-        }.getType();
-        Rep<Transaction> rep = gson.fromJson(resultString, type);
-        return rep;
-    }
-
-    public Rep<CreateTxResult> createTransaction(TransactionPayload payload) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("CreateTransaction").params(new Object[]{payload}).build();
-        Response response = client.newCall(buildRequest(req)).execute();
-        String resultString = Objects.requireNonNull(response.body()).string();
-        log.info("fsn response "+resultString);
-        Type type = new TypeToken<Rep<CreateTxResult>>() {
-        }.getType();
-        Rep<CreateTxResult> rep = gson.fromJson(resultString, type);
-        if (rep.getResult()==null){
-            log.error("fsn response error ="+resultString);
-        }
-        return rep;
-    }
     @Data
     public static class BalanceResult {
         private String balance;
