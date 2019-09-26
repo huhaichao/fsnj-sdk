@@ -2,7 +2,9 @@
 package org.fsnj.jsonrpc;
 
 import com.google.gson.JsonObject;
+import org.fsnj.blockchain.AddressAllInfo;
 import org.fsnj.blockchain.Asset;
+import org.fsnj.blockchain.BlockTx;
 import org.fsnj.blockchain.MakeSwap;
 import org.fsnj.blockchain.StakeInfo;
 import org.fsnj.blockchain.Ticket;
@@ -322,7 +324,7 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<Map<String,String>> getAllBalances(String address , String state) throws IOException {
+    public Rep<Map<String,String>> getAllBalances(String address , Object state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getAllBalances").params(new Object[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
@@ -372,7 +374,6 @@ public class HttpProvider {
         Rep<Long> rep = gson.fromJson(resultString, type);
         return rep;
     }
-
     /**
      * Return the address of the notation.
      * @param notation
@@ -380,8 +381,8 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<String> getNotation(long notation , Object state) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getNotation").params(new Object[]{notation,state}).build();
+    public Rep<String> getAddressByNotation(Integer notation , Object state) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getAddressByNotation").params(new Object[]{notation,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
         Type type = new TypeToken<Rep<String>>() {
@@ -389,7 +390,6 @@ public class HttpProvider {
         Rep<String> rep = gson.fromJson(resultString, type);
         return rep;
     }
-
 
     /**
      * Get the asset information.
@@ -445,15 +445,15 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<String> makeSwap(String from ,long gas,long  gasPrice ,long nonce,
+    public Rep<String> makeSwap(String from ,Long gas,Long  gasPrice ,Long nonce,
                                  String FromAssetID,String FromStartTime,String FromEndTime,
                                  String MinFromAmount,String ToAssetID,String ToStartTime,
                                  String ToEndTime,String MinToAmount,int SwapSize,String[] Targes) throws IOException {
         JsonObject param =  new JsonObject();
         param.addProperty("from",from);
-        param.addProperty("gas",gas);
-        param.addProperty("nonce",nonce);
-        param.addProperty("gasPrice",gasPrice);
+        if(gas!=null)param.addProperty("gas",gas);
+        if(gasPrice!=null)param.addProperty("gasPrice",gasPrice);
+        if(nonce!=null)param.addProperty("nonce",nonce);
         param.addProperty("FromAssetID",FromAssetID);
         param.addProperty("FromStartTime",FromStartTime);
         param.addProperty("FromEndTime",FromEndTime);
@@ -461,7 +461,7 @@ public class HttpProvider {
         param.addProperty("ToStartTime",ToStartTime);
         param.addProperty("ToStartTime",ToStartTime);
         param.addProperty("SwapSize",SwapSize);
-        //param.addProperty("Targes",Targes);
+        //param.add("targes", JsonArray);
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_makeSwap").params(new String[]{param.toString()}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
@@ -485,6 +485,223 @@ public class HttpProvider {
         Type type = new TypeToken<Rep<MakeSwap>>() {
         }.getType();
         Rep<MakeSwap> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Take the quantum swap order.(Account has been unlocked)
+     * @param from
+     * @param gas
+     * @param gasPrice
+     * @param nonce
+     * @param swapID
+     * @param size
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> takeSwap(String from ,Long gas,Long gasPrice,Long nonce, String swapID,Integer size) throws IOException {
+        JsonObject param =  new JsonObject();
+        param.addProperty("from",from);
+        param.addProperty("SwapID",swapID);
+        param.addProperty("Size",size);
+        if(gas!=null)param.addProperty("gas",gas);
+        if(gasPrice!=null)param.addProperty("gasPrice",gasPrice);
+        if(nonce!=null)param.addProperty("nonce",nonce);
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_takeSwap").params(new Object[]{param.toString()}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Destroy Quantum swap order and Return Assets.(Account has been unlocked)
+     * @param from
+     * @param gas
+     * @param gasPrice
+     * @param nonce
+     * @param swapID
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> recallSwap(String from ,Long gas,Long gasPrice,Long nonce, String swapID) throws IOException {
+        JsonObject param =  new JsonObject();
+        param.addProperty("from",from);
+        param.addProperty("SwapID",swapID);
+        if(gas!=null)param.addProperty("gas",gas);
+        if(gasPrice!=null)param.addProperty("gasPrice",gasPrice);
+        if(nonce!=null)param.addProperty("nonce",nonce);
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_recallSwap").params(new Object[]{param.toString()}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Create a multi swap order.(Account has been unlocked)
+     * @param from
+     * @param fromAssetID
+     * @param toAssetID
+     * @param minToAmount
+     * @param minFromAmount
+     * @param fromStartTime
+     * @param fromEndTime
+     * @param swapSize
+     * @param targes
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> makeMultiSwap(String from ,String[] fromAssetID,String[] toAssetID,String[] minToAmount,
+                                     String[] minFromAmount,String[] fromStartTime,String[] fromEndTime,
+                                     Integer swapSize,String[] targes) throws IOException {
+        JsonObject param =  new JsonObject();
+        param.addProperty("from",from);
+
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_makeMultiSwap").params(new Object[]{param.toString()}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+
+    }
+
+    /**
+     * Take the multi swap order.(Account has been unlocked)
+     * @param from
+     * @param gas
+     * @param gasPrice
+     * @param nonce
+     * @param swapID
+     * @param size
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> takeMultiSwap(String from ,Long gas,Long gasPrice,Long nonce, String swapID,Integer size) throws IOException {
+        JsonObject param =  new JsonObject();
+        param.addProperty("from",from);
+        param.addProperty("SwapID",swapID);
+        param.addProperty("Size",size);
+        if(gas!=null)param.addProperty("gas",gas);
+        if(gasPrice!=null)param.addProperty("gasPrice",gasPrice);
+        if(nonce!=null)param.addProperty("nonce",nonce);
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_takeMultiSwap").params(new Object[]{param.toString()}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Destroy multi swap order and Return Assets.(Account has been unlocked)
+     * @param from
+     * @param gas
+     * @param gasPrice
+     * @param nonce
+     * @param swapID
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> recallMultiSwap(String from ,Long gas,Long gasPrice,Long nonce, String swapID) throws IOException {
+        JsonObject param =  new JsonObject();
+        param.addProperty("from",from);
+        param.addProperty("SwapID",swapID);
+        if(gas!=null)param.addProperty("gas",gas);
+        if(gasPrice!=null)param.addProperty("gasPrice",gasPrice);
+        if(nonce!=null)param.addProperty("nonce",nonce);
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_recallMultiSwap").params(new Object[]{param.toString()}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Return true if the ticket is purchased automatically.(Account has been unlocked)
+     * @param state
+     * @return
+     * @throws IOException
+     */
+    public Rep<Boolean> isAutoBuyTicket(Object state) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_isAutoBuyTicket").params(new Object[]{state}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<Boolean>>() {
+        }.getType();
+        Rep<Boolean> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Start buying tickets automatically.(Account has been unlocked)
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> startAutoBuyTicket() throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_startAutoBuyTicket").params(new String[]{""}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Stop buying tickets automatically.(Account has been unlocked)
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> stopAutoBuyTicket() throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_stopAutoBuyTicket").params(new String[]{""}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * Return the tx and receipt of the transaction.
+     * @param hash
+     * @return
+     * @throws IOException
+     */
+    public Rep<BlockTx> getTransactionAndReceipt(String hash) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getTransactionAndReceipt").params(new String[]{hash}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<BlockTx>>() {
+        }.getType();
+        Rep<BlockTx> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+
+    /**
+     * Returns all information about the address.
+     * @param address
+     * @return
+     * @throws IOException
+     */
+    public Rep<AddressAllInfo> allInfoByAddress(String address) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allInfoByAddress").params(new String[]{address}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<AddressAllInfo>>() {
+        }.getType();
+        Rep<AddressAllInfo> rep = gson.fromJson(resultString, type);
         return rep;
     }
 
