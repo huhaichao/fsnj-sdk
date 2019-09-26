@@ -1,14 +1,8 @@
 import java.security.NoSuchAlgorithmException;
 
-import org.bouncycastle.jce.interfaces.ECKey;
 import org.fsnj.account.Account;
 import org.junit.Test;
-import org.spongycastle.util.encoders.Hex;
 
-/**
- * @author zhijie.li
- * @date 2019/9/26
- **/
 public class accountTest {
 
 
