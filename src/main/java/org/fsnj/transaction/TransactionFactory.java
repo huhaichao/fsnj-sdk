@@ -1,6 +1,7 @@
 package org.fsnj.transaction;
 
 import org.fsnj.jsonrpc.HttpProvider;
+import org.fsnj.utils.HexUtil;
 
 public class TransactionFactory {
 
@@ -8,10 +9,10 @@ public class TransactionFactory {
         return Transaction.builder()
                 .ID(params.getID())
                 .version(params.getVersion())
-                .nonce(params.getNonce())
-                .value(params.getValue())
-                .gasPrice(params.getGasPrice())
-                .gasLimit(params.getGasLimit())
+                .nonce(HexUtil.doubleToHex(params.getNonce(),params.getDecimal()))
+                .value(HexUtil.doubleToHex(params.getValue(),params.getDecimal()))
+                .gasPrice(HexUtil.doubleToHex(params.getGasPrice(),params.getDecimal()))
+                .gasLimit(HexUtil.doubleToHex(params.getGasLimit(),params.getDecimal()))
                 .signature(params.getSignature())
                 .toAddr(params.getToAddr())
                 .data(params.getData())

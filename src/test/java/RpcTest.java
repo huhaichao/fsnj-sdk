@@ -67,30 +67,6 @@ public class RpcTest {
     }
 
     @Test
-    public void unlockAccount() throws IOException{
-        Rep<String> stringRep = rpc.unlockAccount("0x88817ef0545ca562530f9347b20138edecfd8e30","123");
-        System.out.println(stringRep.getResult());
-    }
-
-    @Test
-    public void lockAccount() throws IOException{
-        Rep<String> stringRep = rpc.lockAccount("0x88817ef0545ca562530f9347b20138edecfd8e30","123");
-        System.out.println(stringRep.getResult());
-    }
-
-    @Test
-    public void createAccount() throws IOException{
-        Rep<String> account = rpc.createAccount("123");
-        System.out.println(account.getResult());
-    }
-
-    @Test
-    public void sendTransaction() throws IOException{
-        Rep<String> stringRep = rpc.sendTransaction("0x88817ef0545ca562530f9347b20138edecfd8e30", "0x88817ef0545ca562530f9347b20138edecfd8e30", 0.1, 0.000000000021, 0.0000000000052,"123456");
-        System.out.println(stringRep.getResult());
-    }
-
-    @Test
     public void getTimeLockBalance() throws IOException {
         Rep<TimeLockBalance> timeLockBalan = rpc.getTimeLockBalan(
             "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
@@ -148,7 +124,7 @@ public class RpcTest {
 
     @Test
     public void getTransactionAndReceipt() throws IOException{
-        Rep<BlockTx> transactionAndReceipt = rpc.getTransactionAndReceipt("0x2a803ca04e1e702f7ea867314c2d65961d0662cd93f997b328f96c6c5c3f6f09");
+        Rep<BlockTx> transactionAndReceipt = rpc.getTransactionAndReceipt("0x3925f643816f5a3660abee8d1cfabc7d322d580cc82d376897ee2b07142e3915");
         System.out.println(transactionAndReceipt.getResult());
     }
 
@@ -287,6 +263,30 @@ public class RpcTest {
     @Test
     public void stopAutoBuyTicket() throws IOException{
         Rep<String> stringRep = rpc.stopAutoBuyTicket();
+        System.out.println(stringRep.getResult());
+    }
+
+    @Test
+    public void unlockAccount() throws IOException{
+        Rep<String> stringRep = rpc.unlockAccount("0x88817ef0545ca562530f9347b20138edecfd8e30","123");
+        System.out.println(stringRep.getResult());
+    }
+
+    @Test
+    public void lockAccount() throws IOException{
+        Rep<String> stringRep = rpc.lockAccount("0x88817ef0545ca562530f9347b20138edecfd8e30","123");
+        System.out.println(stringRep.getResult());
+    }
+
+    @Test
+    public void createAccount() throws IOException{
+        Rep<String> account = rpc.createAccount("123");
+        System.out.println(account.getResult());
+    }
+
+    @Test
+    public void sendTransaction() throws IOException{
+        Rep<String> stringRep = rpc.sendTransaction("0x88817ef0545ca562530f9347b20138edecfd8e30", "0x88817ef0545ca562530f9347b20138edecfd8e30", 0.1, 0.000000000021, 0.0000000000052,"123456");
         System.out.println(stringRep.getResult());
     }
 }

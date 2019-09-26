@@ -901,7 +901,7 @@ public class HttpProvider {
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
         log.info("fsn response "+resultString);
-        Type type = new TypeToken<Rep<CreateTxResult>>() {
+        Type type = new TypeToken<Rep<String>>() {
         }.getType();
         Rep<String> rep = gson.fromJson(resultString, type);
         if (rep.getResult()==null){
