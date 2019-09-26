@@ -100,8 +100,9 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<String> sendTransaction(String from,String to,double value,double gas,double gasPrice) throws IOException {
+    public Rep<String> sendTransaction(String from,String to,double value,double gas,double gasPrice,String password) throws IOException {
 
+        unlockAccount(from,password);
         final JSONObject sendInfo = new JSONObject();
         sendInfo.put("from", from);
         sendInfo.put("to", to);
@@ -114,6 +115,7 @@ public class HttpProvider {
         Type type = new TypeToken<Rep<String>>() {
         }.getType();
         Rep<String> rep = gson.fromJson(resultString, type);
+        lockAccount(from,password);
         return rep;
     }
 
