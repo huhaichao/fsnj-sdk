@@ -6,6 +6,7 @@ import org.fsnj.blockchain.AddressAllInfo;
 import org.fsnj.blockchain.Asset;
 import org.fsnj.blockchain.BlockTx;
 import org.fsnj.blockchain.MakeSwap;
+import org.fsnj.blockchain.MakeSwaps;
 import org.fsnj.blockchain.StakeInfo;
 import org.fsnj.blockchain.Ticket;
 import org.fsnj.blockchain.TimeLockBalance;
@@ -580,6 +581,22 @@ public class HttpProvider {
     }
 
     /**
+     * Get the details of the multi MakeSwap.
+     * @param hash
+     * @param state
+     * @return
+     * @throws IOException
+     */
+    public Rep<MakeSwaps> getMultiSwap(String hash , Object state) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getMultiSwap").params(new Object[]{hash,state}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<MakeSwaps>>() {
+        }.getType();
+        Rep<MakeSwaps> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+    /**
      * Take the multi swap order.(Account has been unlocked)
      * @param from
      * @param gas
@@ -712,7 +729,25 @@ public class HttpProvider {
         return rep;
     }
 
-
+    /**
+     * send hex
+     * @param hex
+     * @return txid
+     * @throws IOException
+     */
+    public Rep<String> sendRawTransaction(String hex) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("eth_sendRawTransaction").params(new String[]{hex}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        log.info("fsn response "+resultString);
+        Type type = new TypeToken<Rep<CreateTxResult>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        if (rep.getResult()==null){
+            log.error("fsn response error ="+resultString);
+        }
+        return rep;
+    }
     private Request buildRequest(Req req) throws MalformedURLException {
         RequestBody body = RequestBody.create(JSON, gson.toJson(req));
         return new Request.Builder()
