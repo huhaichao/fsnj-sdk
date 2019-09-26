@@ -12,6 +12,8 @@ import com.google.gson.Gson;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.fsnj.transaction.Transaction;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -459,6 +461,15 @@ public class HttpProvider {
                 .build();
     }
 
+    public Rep<Transaction> getTransaction(String hash) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("GetTransaction").params(new String[]{hash}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<Transaction>>() {
+        }.getType();
+        Rep<Transaction> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
     @Data
     public static class BalanceResult {
         private String balance;

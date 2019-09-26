@@ -2,7 +2,6 @@ package org.fsnj.transaction;
 
 
 import org.fsnj.account.Account;
-import org.fsnj.blockchain.TransactionReceipt;
 import org.fsnj.jsonrpc.HttpProvider;
 import org.fsnj.utils.Base58;
 import org.fsnj.utils.ByteUtil;
