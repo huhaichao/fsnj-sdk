@@ -1,30 +1,32 @@
 package org.fsnj.account;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.ethereum.crypto.ECKey;
 import org.fsnj.crypto.KDFType;
 import org.fsnj.crypto.KeyTools;
 import org.fsnj.utils.ByteUtil;
 import org.fsnj.utils.HashUtil;
 import org.fsnj.utils.Validation;
 import lombok.Data;
-import org.web3j.crypto.ECKeyPair;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 
 @Data
 public class Account {
-    private ECKeyPair keys;
+
+    private ECKey ecKey;
+
     private String address;
 
-    public Account(ECKeyPair keys) throws NoSuchAlgorithmException {
-        this.keys = keys;
-        this.address = KeyTools.getAddressFromPublicKey(this.keys.getPublicKey().toString(16));
+    public Account(ECKey ecKey) throws NoSuchAlgorithmException {
+        this.ecKey = ecKey;
+        this.address = Hex.toHexString(ecKey.getAddress());
     }
 
     public Account(String privateKey) throws NoSuchAlgorithmException {
-        String publicKey = KeyTools.getPublicKeyFromPrivateKey(privateKey, true);
-        this.address = KeyTools.getAddressFromPublicKey(publicKey);
-        this.keys = new ECKeyPair(new BigInteger(privateKey, 16), new BigInteger(publicKey, 16));
+        this.ecKey = ECKey.fromPrivate(Hex.decode(privateKey));
+        this.address =Hex.toHexString(ecKey.getAddress());
     }
 
     ;
@@ -39,11 +41,11 @@ public class Account {
     }
 
     public String getPublicKey() {
-        return ByteUtil.byteArrayToHexString(this.keys.getPublicKey().toByteArray());
+        return ByteUtil.byteArrayToHexString(this.ecKey.getPubKey());
     }
 
     public String getPrivateKey() {
-        return ByteUtil.byteArrayToHexString(this.keys.getPrivateKey().toByteArray());
+        return ByteUtil.byteArrayToHexString(this.ecKey.getPrivKeyBytes());
     }
 
     public static String toCheckSumAddress(String address)  {
@@ -64,7 +66,6 @@ public class Account {
         }
         return ret.toString();
     }
-
 
     public  static  void main(String[] args) throws NoSuchAlgorithmException {
         Account account = new Account("86e2ca92713dfd8ea6522e51b03072d261a5d9ab887d1093c7ffe30141eca03b");

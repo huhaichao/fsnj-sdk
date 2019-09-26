@@ -1,19 +1,17 @@
 package org.fsnj.crypto;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.ethereum.crypto.ECKey;
 import org.fsnj.transaction.Transaction;
 import org.fsnj.transaction.TxParams;
 import org.fsnj.utils.HashUtil;
-import org.bouncycastle.crypto.digests.SHA256Digest;
-import org.bouncycastle.crypto.macs.HMac;
-import org.bouncycastle.crypto.prng.SP800SecureRandomBuilder;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.spec.ECNamedCurveGenParameterSpec;
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.math.ec.ECPoint;
-import org.web3j.crypto.ECKeyPair;
+import org.spongycastle.crypto.digests.SHA256Digest;
+import org.spongycastle.crypto.macs.HMac;
+import org.spongycastle.crypto.prng.SP800SecureRandomBuilder;
+import org.spongycastle.jce.ECNamedCurveTable;
+import org.spongycastle.jce.provider.BouncyCastleProvider;
+import org.spongycastle.jce.spec.ECNamedCurveParameterSpec;
+import org.spongycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 import java.security.*;
@@ -35,15 +33,8 @@ public class Schnorr {
 
     static private final int ENT_BITS = 256; // 32 bytes of entropy require for the k value
 
-    static ECKeyPair generateKeyPair() throws NoSuchProviderException,
-            NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
-        keyPairGenerator.initialize(new ECNamedCurveGenParameterSpec("secp256k1"));
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        BCECPrivateKey privateKey = (BCECPrivateKey) keyPair.getPrivate();
-        BCECPublicKey publicKey = (BCECPublicKey) keyPair.getPublic();
-
-        return new ECKeyPair(privateKey.getD(), new BigInteger(1, publicKey.getQ().getEncoded(true)));
+    static ECKey generateKeyPair()  {
+        return new ECKey();
     }
 
     public Transaction sign(Transaction transaction, String privateKey) throws Exception {
@@ -60,16 +51,16 @@ public class Schnorr {
         byte[] message = transaction.bytes();
         String publicKey = KeyTools.getPublicKeyFromPrivateKey(privateKey, true);
 //        System.out.println("publicKey over :" + dateTimeFormatter.format(LocalDateTime.now()));
-        ECKeyPair eckPair = new ECKeyPair(new BigInteger(privateKey, 16), new BigInteger(publicKey, 16));
+          ECKey ecKey = ECKey.fromPrivate(Hex.decode(privateKey));
 //        System.out.println("eckPair over :" + dateTimeFormatter.format(LocalDateTime.now()));
-        Signature signature = Schnorr.sign(eckPair, message);
+        Signature signature = Schnorr.sign(ecKey, message);
 //        System.out.println("signature over :" + dateTimeFormatter.format(LocalDateTime.now()));
         transaction.setSignature(signature.toString().toLowerCase());
         return transaction;
 
     }
 
-    public static Signature sign(ECKeyPair kp, byte[] message) {
+    public static Signature sign(ECKey kp, byte[] message) {
         SecureRandom drbg = getDRBG(message);
         int len = secp256k1.getN().bitLength() / 8;
         byte[] bytes = new byte[len];
@@ -84,10 +75,10 @@ public class Schnorr {
         return signature;
     }
 
-    public static Signature trySign(ECKeyPair kp, byte[] msg, BigInteger k) throws IllegalArgumentException {
+    public static Signature trySign(ECKey kp, byte[] msg, BigInteger k) throws IllegalArgumentException {
         BigInteger n = secp256k1.getN();
-        BigInteger privateKey = kp.getPrivateKey();
-        ECPoint publicKey = secp256k1.getCurve().decodePoint(kp.getPublicKey().toByteArray());
+        BigInteger privateKey = kp.getPrivKey();
+        ECPoint publicKey = kp.getPubKeyPoint();
 
         // 1a. check if private key is 0
         if (privateKey.equals(BigInteger.ZERO)) {

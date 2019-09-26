@@ -129,7 +129,7 @@ public class Wallet {
         }
         tx.setSenderPubKey(signer.getPublicKey());
         byte[] message = tx.bytes();
-        Signature signature = Schnorr.sign(signer.getKeys(), message);
+        Signature signature = Schnorr.sign(signer.getEcKey(), message);
         tx.setSignature(signature.toString().toLowerCase());
         return tx;
     }
