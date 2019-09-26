@@ -86,7 +86,7 @@ public class rpcTest {
 
     @Test
     public void sendTransaction() throws IOException{
-        Rep<String> stringRep = rpc.sendTransaction("0x88817ef0545ca562530f9347b20138edecfd8e30", "0x88817ef0545ca562530f9347b20138edecfd8e30", 0.1, 0.000000000021, 0.0000000000052);
+        Rep<String> stringRep = rpc.sendTransaction("0x88817ef0545ca562530f9347b20138edecfd8e30", "0x88817ef0545ca562530f9347b20138edecfd8e30", 0.1, 0.000000000021, 0.0000000000052,"123456");
         System.out.println(stringRep.getResult());
     }
 
