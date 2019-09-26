@@ -1,7 +1,6 @@
 
 package org.fsnj.jsonrpc;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fsnj.blockchain.Asset;
 import org.fsnj.blockchain.MakeSwap;
