@@ -449,19 +449,19 @@ public class HttpProvider {
                                  String FromAssetID,String FromStartTime,String FromEndTime,
                                  String MinFromAmount,String ToAssetID,String ToStartTime,
                                  String ToEndTime,String MinToAmount,int SwapSize,String[] Targes) throws IOException {
-        JsonObject param =  new JsonObject();
-        param.addProperty("from",from);
-        if(gas!=null)param.addProperty("gas",gas);
-        if(gasPrice!=null)param.addProperty("gasPrice",gasPrice);
-        if(nonce!=null)param.addProperty("nonce",nonce);
-        param.addProperty("FromAssetID",FromAssetID);
-        param.addProperty("FromStartTime",FromStartTime);
-        param.addProperty("FromEndTime",FromEndTime);
-        param.addProperty("MinFromAmount",MinFromAmount);
-        param.addProperty("ToStartTime",ToStartTime);
-        param.addProperty("ToStartTime",ToStartTime);
-        param.addProperty("SwapSize",SwapSize);
-        //param.add("targes", JsonArray);
+        JSONObject param =  new JSONObject();
+        param.put("from",from);
+        if(gas!=null)param.put("gas",gas);
+        if(gasPrice!=null)param.put("gasPrice",gasPrice);
+        if(nonce!=null)param.put("nonce",nonce);
+        param.put("FromAssetID",FromAssetID);
+        param.put("FromStartTime",FromStartTime);
+        param.put("FromEndTime",FromEndTime);
+        param.put("MinFromAmount",MinFromAmount);
+        param.put("ToStartTime",ToStartTime);
+        param.put("ToStartTime",ToStartTime);
+        param.put("SwapSize",SwapSize);
+        param.put("targes", Targes);
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_makeSwap").params(new String[]{param.toString()}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
@@ -559,9 +559,16 @@ public class HttpProvider {
     public Rep<String> makeMultiSwap(String from ,String[] fromAssetID,String[] toAssetID,String[] minToAmount,
                                      String[] minFromAmount,String[] fromStartTime,String[] fromEndTime,
                                      Integer swapSize,String[] targes) throws IOException {
-        JsonObject param =  new JsonObject();
-        param.addProperty("from",from);
-
+        JSONObject param =  new JSONObject();
+        param.put("from",from);
+        param.put("FromAssetID",fromAssetID);
+        param.put("ToAssetID",toAssetID);
+        param.put("MinToAmount",minToAmount);
+        param.put("MinFromAmount",minFromAmount);
+        param.put("FromStartTime",fromStartTime);
+        param.put("FromEndTime",fromEndTime);
+        param.put("SwapSize",swapSize);
+        param.put("Targes", targes);
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_makeMultiSwap").params(new Object[]{param.toString()}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
