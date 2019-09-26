@@ -34,7 +34,7 @@ public class rpcTest {
         System.out.println(stakeInfo);
     }
 
-    //TODO 解锁
+
     @Test
     public void buyTicket() throws IOException {
         Rep<String> stringRep = rpc.buyTicket("");
@@ -64,6 +64,30 @@ public class rpcTest {
         Rep<Integer> numberTicket = rpc.getotalNumberOfTicketsByAddress("0x88817ef0545ca562530f9347b20138edecfd8e30",
             "latest");
         System.out.println(numberTicket.getResult());
+    }
+
+    @Test
+    public void unlockAccount() throws IOException{
+        Rep<String> stringRep = rpc.unlockAccount("0x88817ef0545ca562530f9347b20138edecfd8e30","123");
+        System.out.println(stringRep.getResult());
+    }
+
+    @Test
+    public void lockAccount() throws IOException{
+        Rep<String> stringRep = rpc.lockAccount("0x88817ef0545ca562530f9347b20138edecfd8e30","123");
+        System.out.println(stringRep.getResult());
+    }
+
+    @Test
+    public void createAccount() throws IOException{
+        Rep<String> account = rpc.createAccount("123");
+        System.out.println(account.getResult());
+    }
+
+    @Test
+    public void sendTransaction() throws IOException{
+        Rep<String> stringRep = rpc.sendTransaction("0x88817ef0545ca562530f9347b20138edecfd8e30", "0x88817ef0545ca562530f9347b20138edecfd8e30", 0.1, 0.000000000021, 0.0000000000052);
+        System.out.println(stringRep.getResult());
     }
 
     @Test
@@ -143,7 +167,6 @@ public class rpcTest {
     }
     //***************************fsntx***************************
 
-    //TODO 测试锁定资产
     @Test
     public void assetToTimeLock() throws IOException {
         Rep<String> stringRep = rpc.assetToTimeLock("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5D6CD2FC", "0x5D945FFC", "0x1BC16D674EC80000");

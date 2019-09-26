@@ -20,6 +20,7 @@ import org.fsnj.transaction.TransactionPayload;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,6 +57,84 @@ public class HttpProvider {
         Rep<BigInteger> rep = gson.fromJson(resultString, type);
         return rep;
     }
+
+    /**
+     * unlockAccount
+     *
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> unlockAccount(String account,String passWord) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("personal_unlockAccount").params(new Object[]{account,passWord}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * lockAccount
+     *
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> lockAccount(String account,String passWord) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("personal_lockAccount").params(new Object[]{account,passWord}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * sendTransaction
+     *
+     * @param from
+     * @param to
+     * @param value
+     * @param gas
+     * @param gasPrice
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> sendTransaction(String from,String to,double value,double gas,double gasPrice) throws IOException {
+
+        final JSONObject sendInfo = new JSONObject();
+        sendInfo.put("from", from);
+        sendInfo.put("to", to);
+        sendInfo.put("value", doubleToHex(value));
+        sendInfo.put("gas", doubleToHex(gas));
+        sendInfo.put("gasPrice", doubleToHex(gasPrice));
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("eth_sendTransaction").params(new Object[]{sendInfo}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * createAccount
+     *
+     * @param passWord
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> createAccount(String passWord) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("personal_newAccount").params(new Object[]{passWord}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
 
     /**
      * getStakeInfo
@@ -899,5 +978,17 @@ public class HttpProvider {
                     ", TranID='" + TranID + '\'' +
                     '}';
         }
+    }
+    static final double PASS_VALUE = 1.0E18;
+    public static final int PASS_RADIX = 16;
+
+
+
+    public static String doubleToHex(final double value) {
+        // 转成 hex
+        final BigDecimal bd1 = new BigDecimal(Double.toString(value));
+        final BigDecimal bd2 = new BigDecimal(Double.toString(PASS_VALUE));
+        final BigInteger a = bd1.multiply(bd2).toBigInteger();
+        return "0x" + a.toString(PASS_RADIX);
     }
 }
