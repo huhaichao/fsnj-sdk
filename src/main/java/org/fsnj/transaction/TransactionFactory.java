@@ -4,7 +4,7 @@ import org.fsnj.jsonrpc.HttpProvider;
 
 public class TransactionFactory {
 
-    public static Transaction buildTransaction(TxParams params, HttpProvider provider, TxStatus status) {
+    public static Transaction buildTransaction(TxParams params, HttpProvider provider) {
         return Transaction.builder()
                 .ID(params.getID())
                 .version(params.getVersion())
@@ -16,7 +16,6 @@ public class TransactionFactory {
                 .toAddr(params.getToAddr())
                 .data(params.getData())
                 .provider(provider)
-                .status(status)
                 .build();
     }
 

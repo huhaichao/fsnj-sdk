@@ -5,7 +5,7 @@ import org.ethereum.crypto.ECKey;
 import org.fsnj.account.Account;
 import org.junit.Test;
 
-public class accountTest {
+public class AccountTest {
 
     /**
      * 根据hex私钥生成离线地址
