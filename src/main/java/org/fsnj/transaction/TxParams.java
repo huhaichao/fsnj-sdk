@@ -1,6 +1,5 @@
 package org.fsnj.transaction;
 
-import org.fsnj.blockchain.TransactionReceipt;
 import lombok.Builder;
 import lombok.Data;
 
