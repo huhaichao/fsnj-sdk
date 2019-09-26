@@ -124,7 +124,7 @@ public class RpcTest {
 
     @Test
     public void getTransactionAndReceipt() throws IOException{
-        Rep<BlockTx> transactionAndReceipt = rpc.getTransactionAndReceipt("0x2a803ca04e1e702f7ea867314c2d65961d0662cd93f997b328f96c6c5c3f6f09");
+        Rep<BlockTx> transactionAndReceipt = rpc.getTransactionAndReceipt("0x3925f643816f5a3660abee8d1cfabc7d322d580cc82d376897ee2b07142e3915");
         System.out.println(transactionAndReceipt.getResult());
     }
 

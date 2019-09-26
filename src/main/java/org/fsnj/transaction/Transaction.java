@@ -39,19 +39,6 @@ public class Transaction {
     private HttpProvider provider;
     private TxStatus status;
 
-    public TxParams toTransactionParam() throws IOException {
-        return TxParams.builder()
-                .ID(this.ID)
-                .version(this.version)
-                .nonce(this.nonce)
-                .value(this.value)
-                .gasPrice(this.gasPrice)
-                .gasLimit(this.gasLimit)
-                .signature(this.signature)
-                .toAddr(this.toAddr)
-                .data(this.data)
-                .build();
-    }
 
     public void transfer(ECKey ecKey) throws IOException {
         org.ethereum.core.Transaction tx = null ;

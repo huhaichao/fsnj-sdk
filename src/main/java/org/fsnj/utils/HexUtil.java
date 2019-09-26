@@ -34,6 +34,8 @@ public class HexUtil {
             bd1 = new BigDecimal(Double.toString((double)value));
         } else if (value instanceof BigDecimal) {
             bd1 = (BigDecimal)value;
+        }else if (value instanceof String) {
+            bd1 = new BigDecimal((String)value);
         }
 
         // to hex
