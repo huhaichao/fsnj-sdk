@@ -479,23 +479,6 @@ public class HttpProvider {
         return rep;
     }
 
-    public Rep<BalanceResult> getBalance(String address) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("GetBalance").params(new String[]{address}).build();
-        Response response = client.newCall(buildRequest(req)).execute();
-        String resultString = Objects.requireNonNull(response.body()).string();
-        System.out.println(resultString);
-        Type type = new TypeToken<Rep<BalanceResult>>() {
-        }.getType();
-        Rep<BalanceResult> rep = gson.fromJson(resultString, type);
-        if (null == rep.getResult()) {
-            BalanceResult balanceResult = new BalanceResult();
-            balanceResult.setBalance("0");
-            balanceResult.setNonce("0");
-            rep.setResult(balanceResult);
-        }
-        return rep;
-    }
-
     /**
      * Get all assets balances of account.
      * @param address

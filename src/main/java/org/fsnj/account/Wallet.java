@@ -1,20 +1,14 @@
 package org.fsnj.account;
 
-import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.fsnj.crypto.KeyTools;
-import org.fsnj.crypto.Schnorr;
-import org.fsnj.crypto.Signature;
 import org.fsnj.jsonrpc.HttpProvider;
-import org.fsnj.transaction.Transaction;
-import org.fsnj.transaction.TxParams;
 
 public class Wallet {
     private Map<String, Account> accounts = new HashMap<>();
