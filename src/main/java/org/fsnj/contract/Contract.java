@@ -143,8 +143,8 @@ public class Contract {
         }
 
         try {
-            return this.provider.getSmartContractState(this.address).getResult();
-        } catch (IOException e) {
+            return null;
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
