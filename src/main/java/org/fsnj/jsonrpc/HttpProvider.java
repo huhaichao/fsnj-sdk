@@ -19,6 +19,7 @@ import org.fsnj.transaction.Transaction;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -40,7 +41,12 @@ public class HttpProvider {
         this.url = url;
     }
 
-
+    /**
+     * getTicketPrice
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<BigInteger> getTicketPrice() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_ticketPrice").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -51,6 +57,90 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * unlockAccount
+     *
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> unlockAccount(String account,String passWord) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("personal_unlockAccount").params(new Object[]{account,passWord}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * lockAccount
+     *
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> lockAccount(String account,String passWord) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("personal_lockAccount").params(new Object[]{account,passWord}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * sendTransaction
+     *
+     * @param from
+     * @param to
+     * @param value
+     * @param gas
+     * @param gasPrice
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> sendTransaction(String from,String to,double value,double gas,double gasPrice) throws IOException {
+
+        final JSONObject sendInfo = new JSONObject();
+        sendInfo.put("from", from);
+        sendInfo.put("to", to);
+        sendInfo.put("value", doubleToHex(value));
+        sendInfo.put("gas", doubleToHex(gas));
+        sendInfo.put("gasPrice", doubleToHex(gasPrice));
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("eth_sendTransaction").params(new Object[]{sendInfo}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    /**
+     * createAccount
+     *
+     * @param passWord
+     * @return
+     * @throws IOException
+     */
+    public Rep<String> createAccount(String passWord) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("personal_newAccount").params(new Object[]{passWord}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        Type type = new TypeToken<Rep<String>>() {
+        }.getType();
+        Rep<String> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+
+    /**
+     * getStakeInfo
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<StakeInfo> getStakeInfo() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getStakeInfo").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -61,6 +151,13 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * buyTicket
+     *
+     * @param fromAddress
+     * @return
+     * @throws IOException
+     */
     public Rep<String> buyTicket(String fromAddress) throws IOException {
         JsonObject param =  new JsonObject();param.addProperty("from",fromAddress);
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_buyTicket").params(new String[]{param.toString()}).build();
@@ -72,6 +169,12 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * allTickets
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<Ticket> allTickets() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTickets").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -90,6 +193,14 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * allTicketsByAddress
+     *
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<Ticket> allTicketsByAddress(String address,String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTicketsByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -106,6 +217,12 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * getTotalNumberOfTickets
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<Integer> getTotalNumberOfTickets() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_totalNumberOfTickets").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -117,6 +234,14 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * getotalNumberOfTicketsByAddress
+     *
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<Integer> getotalNumberOfTicketsByAddress(String address,String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_totalNumberOfTicketsByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -127,6 +252,18 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * assetToTimeLock
+     *
+     * @param asset
+     * @param from
+     * @param to
+     * @param start
+     * @param end
+     * @param value
+     * @return
+     * @throws IOException
+     */
     public Rep<String> assetToTimeLock(String asset,String from ,String to ,String start ,String end ,String value) throws IOException {
         JsonObject param =  new JsonObject();
         param.addProperty("asset",asset);
@@ -144,6 +281,18 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * timeLockToTimeLock
+     *
+     * @param asset
+     * @param from
+     * @param to
+     * @param start
+     * @param end
+     * @param value
+     * @return
+     * @throws IOException
+     */
     public Rep<String> timeLockToTimeLock(String asset,String from ,String to ,String start ,String end ,String value) throws IOException {
         JsonObject param =  new JsonObject();
         param.addProperty("asset",asset);
@@ -161,7 +310,18 @@ public class HttpProvider {
         return rep;
     }
 
-
+    /**
+     * timeLockToTimeLock
+     *
+     * @param asset
+     * @param from
+     * @param to
+     * @param start
+     * @param end
+     * @param value
+     * @return
+     * @throws IOException
+     */
     public Rep<String> timeLockToAsset(String asset,String from ,String to ,String start ,String end ,String value) throws IOException {
         JsonObject param =  new JsonObject();
         param.addProperty("asset",asset);
@@ -179,6 +339,15 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * getTimeLockBalan
+     *
+     * @param asset
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<TimeLockBalance> getTimeLockBalan(String asset, String address , String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getTimeLockBalance").params(new Object[]{asset,address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -189,7 +358,14 @@ public class HttpProvider {
         return rep;
     }
 
-
+    /**
+     * getAllTimeLockBalances
+     *
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<Map<String,TimeLockBalance>> getAllTimeLockBalances(String address , String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getAllTimeLockBalances").params(new Object[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -718,8 +894,8 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<AddressAllInfo> allInfoByAddress(String address) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allInfoByAddress").params(new String[]{address}).build();
+    public Rep<AddressAllInfo> allInfoByAddress(String address,String state) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allInfoByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
         Type type = new TypeToken<Rep<AddressAllInfo>>() {
@@ -778,5 +954,17 @@ public class HttpProvider {
                     ", TranID='" + TranID + '\'' +
                     '}';
         }
+    }
+    static final double PASS_VALUE = 1.0E18;
+    public static final int PASS_RADIX = 16;
+
+
+
+    public static String doubleToHex(final double value) {
+        // 转成 hex
+        final BigDecimal bd1 = new BigDecimal(Double.toString(value));
+        final BigDecimal bd2 = new BigDecimal(Double.toString(PASS_VALUE));
+        final BigInteger a = bd1.multiply(bd2).toBigInteger();
+        return "0x" + a.toString(PASS_RADIX);
     }
 }

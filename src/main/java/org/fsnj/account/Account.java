@@ -24,6 +24,12 @@ public class Account {
         this.address = Hex.toHexString(ecKey.getAddress());
     }
 
+    /**
+     * 创建地址
+     *
+     * @param privateKey hex格式私钥
+     * @throws NoSuchAlgorithmException
+     */
     public Account(String privateKey) throws NoSuchAlgorithmException {
         this.ecKey = ECKey.fromPrivate(Hex.decode(privateKey));
         this.address =Hex.toHexString(ecKey.getAddress());
@@ -67,11 +73,4 @@ public class Account {
         return ret.toString();
     }
 
-    public  static  void main(String[] args) throws NoSuchAlgorithmException {
-        Account account = new Account("86e2ca92713dfd8ea6522e51b03072d261a5d9ab887d1093c7ffe30141eca03b");
-
-        System.out.println(account.address);
-        System.out.println(account.getPrivateKey());
-        System.out.println(account.getPublicKey());
-    }
 }
