@@ -31,10 +31,10 @@ public class LinuxSecureRandom extends SecureRandomSpi {
 //                log.info("Randomness is already secure.");
         } catch (FileNotFoundException e) {
             // Should never happen.
-            System.out.println("zil sdk error : /dev/urandom does not appear to exist or is not openable");
+            System.out.println("fsn sdk error : /dev/urandom does not appear to exist or is not openable");
             throw new RuntimeException(e);
         } catch (IOException e) {
-            System.out.println("zil sdk error : /dev/urandom does not appear to be readable");
+            System.out.println("fsn sdk error : /dev/urandom does not appear to be readable");
             throw new RuntimeException(e);
         }
     }

@@ -510,12 +510,12 @@ public class HttpProvider {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("CreateTransaction").params(new Object[]{payload}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
-        log.info("zil response "+resultString);
+        log.info("fsn response "+resultString);
         Type type = new TypeToken<Rep<CreateTxResult>>() {
         }.getType();
         Rep<CreateTxResult> rep = gson.fromJson(resultString, type);
         if (rep.getResult()==null){
-            log.error("zil response error ="+resultString);
+            log.error("fsn response error ="+resultString);
         }
         return rep;
     }

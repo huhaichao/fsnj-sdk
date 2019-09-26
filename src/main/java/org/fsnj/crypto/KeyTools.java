@@ -1,20 +1,19 @@
 package org.fsnj.crypto;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.ethereum.crypto.ECKey;
 import org.fsnj.utils.ByteUtil;
 import org.fsnj.utils.HashUtil;
-import org.bouncycastle.asn1.x9.X9ECParameters;
-import org.bouncycastle.crypto.ec.CustomNamedCurves;
-import org.bouncycastle.crypto.params.ECDomainParameters;
-import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.math.ec.FixedPointCombMultiplier;
-import org.web3j.crypto.ECKeyPair;
+import org.spongycastle.asn1.x9.X9ECParameters;
+import org.spongycastle.crypto.ec.CustomNamedCurves;
+import org.spongycastle.crypto.params.ECDomainParameters;
+import org.spongycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class KeyTools {
@@ -33,8 +32,8 @@ public class KeyTools {
                 CURVE_PARAMS.getH());
     }
 
-    public static ECKeyPair generateKeyPair() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        return Schnorr.generateKeyPair();
+    public static ECKey generateKeyPair() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        return new ECKey();
     }
 
     public static String getAddressFromPrivateKey(String privateKey){
@@ -49,14 +48,14 @@ public class KeyTools {
     public static String getPublicKeyFromPrivateKey(String privateKey, boolean compressed) {
         byte[] pk = ByteUtil.hexStringToByteArray(privateKey);
         BigInteger bigInteger = new BigInteger(1, pk);
-        ECPoint point = getPublicPointFromPrivate(bigInteger);
+        ECKey ecKey = ECKey.fromPrivate(bigInteger);
+        ECPoint point = ecKey.getPubKeyPoint();
         return ByteUtil.byteArrayToHexString(point.getEncoded(compressed));
     }
 
     public static String getAddressFromPublicKey(String publicKey) {
-        byte[] data = getAddressFromPublicKey(ByteUtil.hexStringToByteArray(publicKey));
-        String originAddress = ByteUtil.byteArrayToHexString(data);
-        return originAddress.substring(24);
+        ECKey ecKey = ECKey.fromPublicOnly(Hex.decode(publicKey));
+        return Hex.toHexString(ecKey.getAddress());
     }
 
     public static byte[] getAddressFromPublicKey(byte[] publicKey) {
@@ -67,13 +66,6 @@ public class KeyTools {
         byte[] bytes = new byte[size];
         new SecureRandom().nextBytes(bytes);
         return bytes;
-    }
-
-    private static ECPoint getPublicPointFromPrivate(BigInteger privateKeyPoint) {
-        if (privateKeyPoint.bitLength() > CURVE.getN().bitLength()) {
-            privateKeyPoint = privateKeyPoint.mod(CURVE.getN());
-        }
-        return new FixedPointCombMultiplier().multiply(CURVE.getG(), privateKeyPoint);
     }
 
     public static String decryptPrivateKey(String file, String passphrase) throws Exception {
