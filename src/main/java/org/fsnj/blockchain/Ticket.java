@@ -8,6 +8,8 @@ import lombok.Data;
 /**
  * Created by huchao on 2019/9/26.
  */
+@Data
+@Builder
 public class Ticket {
 
     private Map<String,TicketBody> tickets ;

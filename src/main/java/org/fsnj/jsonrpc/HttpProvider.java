@@ -1,6 +1,7 @@
 
 package org.fsnj.jsonrpc;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.fsnj.blockchain.Asset;
 import org.fsnj.blockchain.MakeSwap;
@@ -17,10 +18,14 @@ import org.fsnj.transaction.TransactionPayload;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Objects;
+
+import com.alibaba.fastjson.JSONObject;
+
 @Slf4j
 public class HttpProvider {
 
@@ -35,13 +40,13 @@ public class HttpProvider {
     }
 
 
-    public Rep<Long> getTicketPrice() throws IOException {
+    public Rep<BigInteger> getTicketPrice() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_ticketPrice").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
-        Type type = new TypeToken<Rep<Long>>() {
+        Type type = new TypeToken<Rep<BigInteger>>() {
         }.getType();
-        Rep<Long> rep = gson.fromJson(resultString, type);
+        Rep<BigInteger> rep = gson.fromJson(resultString, type);
         return rep;
     }
 
@@ -70,9 +75,15 @@ public class HttpProvider {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTickets").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
+        JsonElement jsonElement = gson.toJsonTree(resultString);
+        JsonObject json = jsonElement.getAsJsonObject();
+        JsonObject result = json.getAsJsonObject("result");
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("tickets",result);
+        json.add("result",jsonObject);
         Type type = new TypeToken<Rep<Ticket>>() {
         }.getType();
-        Rep<Ticket> rep = gson.fromJson(resultString, type);
+        Rep<Ticket> rep = gson.fromJson(json, type);
         return rep;
     }
 
@@ -80,9 +91,15 @@ public class HttpProvider {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTicketsByAddress").params(new String[]{address,"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
+        JsonElement jsonElement = gson.toJsonTree(resultString);
+        JsonObject json = jsonElement.getAsJsonObject();
+        JsonObject result = json.getAsJsonObject("result");
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.add("tickets",result);
+        json.add("result",jsonObject);
         Type type = new TypeToken<Rep<Ticket>>() {
         }.getType();
-        Rep<Ticket> rep = gson.fromJson(resultString, type);
+        Rep<Ticket> rep = gson.fromJson(json, type);
         return rep;
     }
 
