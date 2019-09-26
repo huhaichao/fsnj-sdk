@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.fsnj.transaction.Transaction;
+import org.fsnj.transaction.TransactionPayload;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -279,6 +280,23 @@ public class HttpProvider {
         return rep;
     }
 
+    public Rep<BalanceResult> getBalance(String address) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("GetBalance").params(new String[]{address}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        System.out.println(resultString);
+        Type type = new TypeToken<Rep<BalanceResult>>() {
+        }.getType();
+        Rep<BalanceResult> rep = gson.fromJson(resultString, type);
+        if (null == rep.getResult()) {
+            BalanceResult balanceResult = new BalanceResult();
+            balanceResult.setBalance("0");
+            balanceResult.setNonce("0");
+            rep.setResult(balanceResult);
+        }
+        return rep;
+    }
+
     /**
      * Get all assets balances of account.
      * @param address
@@ -468,6 +486,20 @@ public class HttpProvider {
         Type type = new TypeToken<Rep<Transaction>>() {
         }.getType();
         Rep<Transaction> rep = gson.fromJson(resultString, type);
+        return rep;
+    }
+
+    public Rep<CreateTxResult> createTransaction(TransactionPayload payload) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("CreateTransaction").params(new Object[]{payload}).build();
+        Response response = client.newCall(buildRequest(req)).execute();
+        String resultString = Objects.requireNonNull(response.body()).string();
+        log.info("zil response "+resultString);
+        Type type = new TypeToken<Rep<CreateTxResult>>() {
+        }.getType();
+        Rep<CreateTxResult> rep = gson.fromJson(resultString, type);
+        if (rep.getResult()==null){
+            log.error("zil response error ="+resultString);
+        }
         return rep;
     }
     @Data
