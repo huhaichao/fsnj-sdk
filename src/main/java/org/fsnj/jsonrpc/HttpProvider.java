@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.fsnj.transaction.Transaction;
-import org.fsnj.transaction.TransactionPayload;
+import org.fsnj.utils.HexUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -107,9 +107,9 @@ public class HttpProvider {
         final JSONObject sendInfo = new JSONObject();
         sendInfo.put("from", from);
         sendInfo.put("to", to);
-        sendInfo.put("value", doubleToHex(value));
-        sendInfo.put("gas", doubleToHex(gas));
-        sendInfo.put("gasPrice", doubleToHex(gasPrice));
+        sendInfo.put("value", HexUtil.doubleToHex(value,18));
+        sendInfo.put("gas", HexUtil.doubleToHex(gas,18));
+        sendInfo.put("gasPrice", HexUtil.doubleToHex(gasPrice,18));
         Req req = Req.builder().id("1").jsonrpc("2.0").method("eth_sendTransaction").params(new Object[]{sendInfo}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
@@ -934,29 +934,6 @@ public class HttpProvider {
                 .build();
     }
 
-    public Rep<Transaction> getTransaction(String hash) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("GetTransaction").params(new String[]{hash}).build();
-        Response response = client.newCall(buildRequest(req)).execute();
-        String resultString = Objects.requireNonNull(response.body()).string();
-        Type type = new TypeToken<Rep<Transaction>>() {
-        }.getType();
-        Rep<Transaction> rep = gson.fromJson(resultString, type);
-        return rep;
-    }
-
-    public Rep<CreateTxResult> createTransaction(TransactionPayload payload) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("CreateTransaction").params(new Object[]{payload}).build();
-        Response response = client.newCall(buildRequest(req)).execute();
-        String resultString = Objects.requireNonNull(response.body()).string();
-        log.info("fsn response "+resultString);
-        Type type = new TypeToken<Rep<CreateTxResult>>() {
-        }.getType();
-        Rep<CreateTxResult> rep = gson.fromJson(resultString, type);
-        if (rep.getResult()==null){
-            log.error("fsn response error ="+resultString);
-        }
-        return rep;
-    }
     @Data
     public static class BalanceResult {
         private String balance;
@@ -980,17 +957,5 @@ public class HttpProvider {
                     ", TranID='" + TranID + '\'' +
                     '}';
         }
-    }
-    static final double PASS_VALUE = 1.0E18;
-    public static final int PASS_RADIX = 16;
-
-
-
-    public static String doubleToHex(final double value) {
-        // 转成 hex
-        final BigDecimal bd1 = new BigDecimal(Double.toString(value));
-        final BigDecimal bd2 = new BigDecimal(Double.toString(PASS_VALUE));
-        final BigInteger a = bd1.multiply(bd2).toBigInteger();
-        return "0x" + a.toString(PASS_RADIX);
     }
 }

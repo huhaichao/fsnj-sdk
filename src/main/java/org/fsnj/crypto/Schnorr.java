@@ -1,9 +1,6 @@
 package org.fsnj.crypto;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.ethereum.crypto.ECKey;
-import org.fsnj.transaction.Transaction;
-import org.fsnj.transaction.TxParams;
 import org.fsnj.utils.HashUtil;
 import org.spongycastle.crypto.digests.SHA256Digest;
 import org.spongycastle.crypto.macs.HMac;
@@ -35,29 +32,6 @@ public class Schnorr {
 
     static ECKey generateKeyPair()  {
         return new ECKey();
-    }
-
-    public Transaction sign(Transaction transaction, String privateKey) throws Exception {
-//        System.out.println("sign start :" + dateTimeFormatter.format(LocalDateTime.now()));
-        TxParams txParams = transaction.toTransactionParam();
-//        System.out.println("txParams over :" + dateTimeFormatter.format(LocalDateTime.now()));
-        if (Objects.isNull(txParams) || txParams.getSenderPubKey().isEmpty()) {
-            throw new IllegalArgumentException("can not get senderPubkey");
-        }
-        if (Objects.isNull(transaction.getNonce()) || transaction.getNonce().isEmpty()) {
-            System.out.println("nonce=" + transaction.getNonce());
-            throw new IllegalArgumentException("cannot get nonce");
-        }
-        byte[] message = transaction.bytes();
-        String publicKey = KeyTools.getPublicKeyFromPrivateKey(privateKey, true);
-//        System.out.println("publicKey over :" + dateTimeFormatter.format(LocalDateTime.now()));
-          ECKey ecKey = ECKey.fromPrivate(Hex.decode(privateKey));
-//        System.out.println("eckPair over :" + dateTimeFormatter.format(LocalDateTime.now()));
-        Signature signature = Schnorr.sign(ecKey, message);
-//        System.out.println("signature over :" + dateTimeFormatter.format(LocalDateTime.now()));
-        transaction.setSignature(signature.toString().toLowerCase());
-        return transaction;
-
     }
 
     public static Signature sign(ECKey kp, byte[] message) {

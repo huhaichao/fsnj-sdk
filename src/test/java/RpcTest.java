@@ -18,7 +18,7 @@ import org.junit.Test;
  * @author zhijie.li
  * @date 2019/9/26
  **/
-public class rpcTest {
+public class RpcTest {
     private static HttpProvider rpc = new HttpProvider("https://fsn.dev/api");
 
     //***************************fsn***************************

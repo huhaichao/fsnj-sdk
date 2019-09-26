@@ -1,35 +1,40 @@
 package org.fsnj.transaction;
-
-
-import org.fsnj.account.Account;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.ethereum.crypto.ECKey;
 import org.fsnj.jsonrpc.HttpProvider;
-import org.fsnj.utils.Base58;
-import org.fsnj.utils.ByteUtil;
-import org.fsnj.utils.TransactionUtil;
-import com.google.gson.Gson;
+import org.fsnj.utils.HexUtil;
 import lombok.Builder;
 import lombok.Data;
-
+import org.spongycastle.util.encoders.Hex;
+import org.web3j.abi.FunctionEncoder;
+import org.web3j.abi.TypeReference;
+import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.Function;
+import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.generated.Uint256;
 import java.io.IOException;
-import java.time.Duration;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
+@Slf4j
 public class Transaction {
+
+    private  static final Integer chainId =32659 ;
+
     private String ID;
     private String version;
     private String nonce;
-    private String amount;
+    private String value;
     private String gasPrice;
     private String gasLimit;
     private String signature;
-    private TransactionReceipt receipt;
-    private String senderPubKey;
+    private String fromAddr;
     private String toAddr;
-    private String code;
     private String data;
+    private Integer decimal;
 
     private HttpProvider provider;
     private TxStatus status;
@@ -39,45 +44,54 @@ public class Transaction {
                 .ID(this.ID)
                 .version(this.version)
                 .nonce(this.nonce)
-                .amount(this.amount)
+                .value(this.value)
                 .gasPrice(this.gasPrice)
                 .gasLimit(this.gasLimit)
                 .signature(this.signature)
-                .receipt(this.receipt)
-                .senderPubKey(this.senderPubKey.toLowerCase())
                 .toAddr(this.toAddr)
                 .data(this.data)
                 .build();
     }
 
-    public TransactionPayload toTransactionPayload() throws Exception {
-        return TransactionPayload.builder()
-                .version(Integer.parseInt(this.version))
-                .nonce(Integer.valueOf(this.nonce))
-                .toAddr(this.toAddr)
-                .amount(this.amount)
-                .pubKey(this.senderPubKey.toLowerCase())
-                .gasPrice(this.gasPrice)
-                .gasLimit(this.gasLimit)
-                .code(this.code)
-                .data(this.data)
-                .signature(this.signature.toLowerCase())
-                .build();
-    }
+    public void transfer(ECKey ecKey) throws IOException {
+        org.ethereum.core.Transaction tx = null ;
+        if (!StringUtils.isEmpty(this.getID())) {
+            List<Type> input = new ArrayList<>();
+            input.add(new Address(this.toAddr));
+            input.add(new Uint256(HexUtil.doubleToBigInteger(this.value, decimal)));
+            List<TypeReference<?>> output = new ArrayList<>();
+            Function function = new Function("transfer", input, output);
+            String encodedFunction = FunctionEncoder.encode(function);
+            try {
+                    tx = new org.ethereum.core.Transaction(
+                        HexUtil.StringHexToByteArray(this.nonce),
+                        HexUtil.StringHexToByteArray(this.gasPrice),
+                        HexUtil.StringHexToByteArray(this.gasLimit),
+                        HexUtil.StringHexToByteArray(this.getID()),
+                        HexUtil.StringHexToByteArray("0"),
+                        HexUtil.StringHexToByteArray(encodedFunction), chainId);
 
-    public void marshalToAddress() throws IOException {
-        byte[] address = Base58.decode(this.getToAddr());
-        this.setToAddr(ByteUtil.byteArrayToHexString(address));
-    }
+            } catch (final Exception e) {
+                log.error("Sign fail address:{}", this.fromAddr, e);
+            }
+        } else {
+            try {
+                    tx = new org.ethereum.core.Transaction(
+                        HexUtil.StringHexToByteArray(this.nonce),
+                        HexUtil.StringHexToByteArray(this.gasPrice),
+                        HexUtil.StringHexToByteArray(this.gasLimit),
+                        HexUtil.StringHexToByteArray(this.toAddr),
+                        HexUtil.StringHexToByteArray(this.value),
+                        HexUtil.StringHexToByteArray(this.data), chainId);
 
-    public byte[] bytes() throws IOException {
-        TxParams txParams = toTransactionParam();
-        TransactionUtil util = new TransactionUtil();
-        Gson gson = new Gson();
-        byte[] bytes = util.encodeTransactionProto(txParams);
-        return bytes;
+            } catch (final Exception e) {
+                log.error("Sign fail address:{}", this.getFromAddr(), e);
+            }
+        }
+        // 签名
+        tx.sign(ecKey);
+        this.signature = "0x" + Hex.toHexString(tx.getEncoded());
     }
-
     public boolean isPending() {
         return this.status.equals(TxStatus.Pending);
     }
@@ -93,51 +107,5 @@ public class Transaction {
     public boolean isRejected() {
         return this.status.equals(TxStatus.Rejected);
     }
-
-    public Transaction confirm(String txHash, int maxAttempts, int interval) throws InterruptedException {
-        this.setStatus(TxStatus.Pending);
-        for (int i = 0; i < maxAttempts; i++) {
-            boolean tracked = this.trackTx(txHash);
-            Thread.sleep(Duration.of(interval, SECONDS).toMillis());
-
-            if (tracked) {
-                this.setStatus(TxStatus.Confirmed);
-                return this;
-            }
-        }
-        this.status = TxStatus.Rejected;
-        return this;
-    }
-
-    public boolean trackTx(String txHash) {
-        System.out.println("tracking transaction: " + txHash);
-        Transaction response;
-        try {
-            response = this.provider.getTransaction(txHash).getResult();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("transaction not confirmed yet");
-            return false;
-        }
-
-        if (null == response) {
-            System.out.println("transaction not confirmed yet");
-            return false;
-        }
-
-
-        this.setID(response.getID());
-        this.setReceipt(response.getReceipt());
-        if (response.getReceipt() != null && response.getReceipt().isSuccess()) {
-            System.out.println("Transaction confirmed!");
-            this.setStatus(TxStatus.Confirmed);
-        } else {
-            this.setStatus(TxStatus.Rejected);
-            System.out.println("Transaction rejected!");
-
-        }
-        return true;
-    }
-
 
 }
