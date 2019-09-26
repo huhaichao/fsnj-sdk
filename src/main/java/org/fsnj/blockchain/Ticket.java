@@ -1,5 +1,6 @@
 package org.fsnj.blockchain;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 import lombok.Builder;
@@ -20,9 +21,9 @@ public class Ticket {
 
         private  String Owner ;
         private  long Height ;
-        private  long StartTime ;
-        private  long ExpireTime ;
-        private  long Value ;
+        private  BigInteger StartTime ;
+        private  BigInteger ExpireTime ;
+        private BigInteger Value ;
 
     }
 

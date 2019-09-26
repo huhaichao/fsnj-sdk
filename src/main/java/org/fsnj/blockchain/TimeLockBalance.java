@@ -1,5 +1,6 @@
 package org.fsnj.blockchain;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import lombok.Builder;
@@ -16,11 +17,11 @@ public class TimeLockBalance {
     @Builder
     public static class TimeLockBalanceBody {
 
-        private long StartTime;
+        private BigInteger StartTime;
 
-        private  long EndTime ;
+        private  BigInteger EndTime ;
 
-        private long Value ;
+        private BigInteger Value ;
 
     }
 }

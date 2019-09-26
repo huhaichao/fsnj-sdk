@@ -75,31 +75,33 @@ public class HttpProvider {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTickets").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
-        JsonElement jsonElement = gson.toJsonTree(resultString);
-        JsonObject json = jsonElement.getAsJsonObject();
-        JsonObject result = json.getAsJsonObject("result");
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.add("tickets",result);
-        json.add("result",jsonObject);
+
+        JSONObject jsonObject = JSONObject.parseObject(resultString);
+
+        JSONObject json = new JSONObject();
+        json.put("tickets",jsonObject.getJSONObject("result"));
+
+        jsonObject.put("result",json);
+
         Type type = new TypeToken<Rep<Ticket>>() {
         }.getType();
-        Rep<Ticket> rep = gson.fromJson(json, type);
+        Rep<Ticket> rep = gson.fromJson(jsonObject.toString(), type);
         return rep;
     }
 
-    public Rep<Ticket> allTicketsByAddress(String address) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTicketsByAddress").params(new String[]{address,"latest"}).build();
+    public Rep<Ticket> allTicketsByAddress(String address,String state) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTicketsByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
-        JsonElement jsonElement = gson.toJsonTree(resultString);
-        JsonObject json = jsonElement.getAsJsonObject();
-        JsonObject result = json.getAsJsonObject("result");
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.add("tickets",result);
-        json.add("result",jsonObject);
+        JSONObject jsonObject = JSONObject.parseObject(resultString);
+        JSONObject json = new JSONObject();
+        json.put("tickets",jsonObject.getJSONObject("result"));
+
+        jsonObject.put("result",json);
+
         Type type = new TypeToken<Rep<Ticket>>() {
         }.getType();
-        Rep<Ticket> rep = gson.fromJson(json, type);
+        Rep<Ticket> rep = gson.fromJson(jsonObject.toString(), type);
         return rep;
     }
 
@@ -114,8 +116,8 @@ public class HttpProvider {
         return rep;
     }
 
-    public Rep<Integer> getotalNumberOfTicketsByAddress(String address) throws IOException {
-        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_totalNumberOfTicketsByAddress").params(new String[]{address,"latest"}).build();
+    public Rep<Integer> getotalNumberOfTicketsByAddress(String address,String state) throws IOException {
+        Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_totalNumberOfTicketsByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
         Type type = new TypeToken<Rep<Integer>>() {
@@ -176,7 +178,7 @@ public class HttpProvider {
         return rep;
     }
 
-    public Rep<TimeLockBalance> getTimeLockBalan(String asset, String address , Object state) throws IOException {
+    public Rep<TimeLockBalance> getTimeLockBalan(String asset, String address , String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getTimeLockBalance").params(new Object[]{asset,address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
@@ -187,7 +189,7 @@ public class HttpProvider {
     }
 
 
-    public Rep<Map<String,TimeLockBalance>> getAllTimeLockBalances(String address , Object state) throws IOException {
+    public Rep<Map<String,TimeLockBalance>> getAllTimeLockBalances(String address , String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getAllTimeLockBalances").params(new Object[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
@@ -321,7 +323,7 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<Map<String,String>> getAllBalances(String address , Object state) throws IOException {
+    public Rep<Map<String,String>> getAllBalances(String address , String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getAllBalances").params(new Object[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
@@ -415,13 +417,13 @@ public class HttpProvider {
      * @return
      * @throws IOException
      */
-    public Rep<Long> getBalance(String assetID ,String address, Object state) throws IOException {
+    public Rep<BigInteger> getBalance(String assetID ,String address, Object state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getBalance").params(new Object[]{assetID,address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
         String resultString = Objects.requireNonNull(response.body()).string();
-        Type type = new TypeToken<Rep<Long>>() {
+        Type type = new TypeToken<Rep<BigInteger>>() {
         }.getType();
-        Rep<Long> rep = gson.fromJson(resultString, type);
+        Rep<BigInteger> rep = gson.fromJson(resultString, type);
         return rep;
     }
 
