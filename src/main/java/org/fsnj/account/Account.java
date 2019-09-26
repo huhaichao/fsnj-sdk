@@ -2,8 +2,6 @@ package org.fsnj.account;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.ethereum.crypto.ECKey;
-import org.fsnj.crypto.KDFType;
-import org.fsnj.crypto.KeyTools;
 import org.fsnj.utils.ByteUtil;
 import org.fsnj.utils.HashUtil;
 import org.fsnj.utils.Validation;
@@ -35,16 +33,6 @@ public class Account {
         this.address =Hex.toHexString(ecKey.getAddress());
     }
 
-    ;
-
-    public static Account fromFile(String file, String passphrase) throws Exception {
-        String privateKey = KeyTools.decryptPrivateKey(file, passphrase);
-        return new Account(privateKey);
-    }
-
-    public String toFile(String privateKey, String passphrase, KDFType type) throws Exception {
-        return KeyTools.encryptPrivateKey(privateKey, passphrase, type);
-    }
 
     public String getPublicKey() {
         return ByteUtil.byteArrayToHexString(this.ecKey.getPubKey());

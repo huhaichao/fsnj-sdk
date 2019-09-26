@@ -6,8 +6,7 @@ import java.security.NoSuchProviderException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import org.fsnj.crypto.KeyTools;
+import org.ethereum.crypto.ECKey;
 import org.fsnj.jsonrpc.HttpProvider;
 
 public class Wallet {
@@ -36,7 +35,7 @@ public class Wallet {
     }
 
     public String createAccount() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
-        Account account = new Account(KeyTools.generateKeyPair());
+        Account account = new Account(new ECKey());
         this.accounts.put(account.getAddress(), account);
 
         if (!defaultAccount.isPresent()) {
@@ -48,16 +47,6 @@ public class Wallet {
     public String addByPrivateKey(String privateKey) throws NoSuchAlgorithmException {
         Account account = new Account(privateKey);
         this.accounts.put(account.getAddress(), account);
-        if (!defaultAccount.isPresent()) {
-            defaultAccount = Optional.of(account);
-        }
-        return account.getAddress();
-    }
-
-    public String addByKeyStore(String keystore, String passphrase) throws Exception {
-        Account account = Account.fromFile(keystore, passphrase);
-        this.accounts.put(account.getAddress(), account);
-
         if (!defaultAccount.isPresent()) {
             defaultAccount = Optional.of(account);
         }
