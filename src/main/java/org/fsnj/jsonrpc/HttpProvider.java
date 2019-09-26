@@ -41,7 +41,12 @@ public class HttpProvider {
         this.url = url;
     }
 
-
+    /**
+     * getTicketPrice
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<BigInteger> getTicketPrice() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_ticketPrice").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -52,6 +57,12 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * getStakeInfo
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<StakeInfo> getStakeInfo() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getStakeInfo").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -62,6 +73,13 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * buyTicket
+     *
+     * @param fromAddress
+     * @return
+     * @throws IOException
+     */
     public Rep<String> buyTicket(String fromAddress) throws IOException {
         JsonObject param =  new JsonObject();param.addProperty("from",fromAddress);
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsntx_buyTicket").params(new String[]{param.toString()}).build();
@@ -73,6 +91,12 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * allTickets
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<Ticket> allTickets() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTickets").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -91,6 +115,14 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * allTicketsByAddress
+     *
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<Ticket> allTicketsByAddress(String address,String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_allTicketsByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -107,6 +139,12 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * getTotalNumberOfTickets
+     *
+     * @return
+     * @throws IOException
+     */
     public Rep<Integer> getTotalNumberOfTickets() throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_totalNumberOfTickets").params(new String[]{"latest"}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -118,6 +156,14 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * getotalNumberOfTicketsByAddress
+     *
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<Integer> getotalNumberOfTicketsByAddress(String address,String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_totalNumberOfTicketsByAddress").params(new String[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -128,6 +174,18 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * assetToTimeLock
+     *
+     * @param asset
+     * @param from
+     * @param to
+     * @param start
+     * @param end
+     * @param value
+     * @return
+     * @throws IOException
+     */
     public Rep<String> assetToTimeLock(String asset,String from ,String to ,String start ,String end ,String value) throws IOException {
         JsonObject param =  new JsonObject();
         param.addProperty("asset",asset);
@@ -145,6 +203,18 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * timeLockToTimeLock
+     *
+     * @param asset
+     * @param from
+     * @param to
+     * @param start
+     * @param end
+     * @param value
+     * @return
+     * @throws IOException
+     */
     public Rep<String> timeLockToTimeLock(String asset,String from ,String to ,String start ,String end ,String value) throws IOException {
         JsonObject param =  new JsonObject();
         param.addProperty("asset",asset);
@@ -162,7 +232,18 @@ public class HttpProvider {
         return rep;
     }
 
-
+    /**
+     * timeLockToTimeLock
+     *
+     * @param asset
+     * @param from
+     * @param to
+     * @param start
+     * @param end
+     * @param value
+     * @return
+     * @throws IOException
+     */
     public Rep<String> timeLockToAsset(String asset,String from ,String to ,String start ,String end ,String value) throws IOException {
         JsonObject param =  new JsonObject();
         param.addProperty("asset",asset);
@@ -180,6 +261,15 @@ public class HttpProvider {
         return rep;
     }
 
+    /**
+     * getTimeLockBalan
+     *
+     * @param asset
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<TimeLockBalance> getTimeLockBalan(String asset, String address , String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getTimeLockBalance").params(new Object[]{asset,address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();
@@ -190,7 +280,14 @@ public class HttpProvider {
         return rep;
     }
 
-
+    /**
+     * getAllTimeLockBalances
+     *
+     * @param address
+     * @param state
+     * @return
+     * @throws IOException
+     */
     public Rep<Map<String,TimeLockBalance>> getAllTimeLockBalances(String address , String state) throws IOException {
         Req req = Req.builder().id("1").jsonrpc("2.0").method("fsn_getAllTimeLockBalances").params(new Object[]{address,state}).build();
         Response response = client.newCall(buildRequest(req)).execute();

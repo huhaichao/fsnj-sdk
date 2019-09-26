@@ -6,6 +6,7 @@ import org.fsnj.blockchain.AddressAllInfo;
 import org.fsnj.blockchain.Asset;
 import org.fsnj.blockchain.BlockTx;
 import org.fsnj.blockchain.MakeSwap;
+import org.fsnj.blockchain.MakeSwaps;
 import org.fsnj.blockchain.StakeInfo;
 import org.fsnj.blockchain.Ticket;
 import org.fsnj.blockchain.TimeLockBalance;
@@ -135,26 +136,29 @@ public class rpcTest {
 
     @Test
     public void getMultiSwap() throws IOException{
-        rpc.getMultiSwap("0xf616d50440414ce2bfd2204ace993a34e53e58cc656c82b339be935670f2070e","0xf616d50440414ce2bfd2204ace993a34e53e58cc656c82b339be935670f2070e");
+        Rep<MakeSwaps> multiSwapReq = rpc.getMultiSwap(
+            "0xf616d50440414ce2bfd2204ace993a34e53e58cc656c82b339be935670f2070e",
+            "latest");
+        System.out.println(multiSwapReq.getResult());
     }
     //***************************fsntx***************************
 
     //TODO 测试锁定资产
     @Test
     public void assetToTimeLock() throws IOException {
-        Rep<String> stringRep = rpc.assetToTimeLock("", "", "", "", "", "");
+        Rep<String> stringRep = rpc.assetToTimeLock("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5D6CD2FC", "0x5D945FFC", "0x1BC16D674EC80000");
         System.out.println(stringRep.getResult());
     }
 
     @Test
     public void timeLockToTimeLock() throws IOException {
-        Rep<String> stringRep = rpc.timeLockToTimeLock("", "", "", "", "", "");
+        Rep<String> stringRep = rpc.timeLockToTimeLock("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5D6CD2FC", "0x5D945FFC", "0x1BC16D674EC80000");
         System.out.println(stringRep.getResult());
     }
 
     @Test
     public void timeLockToAsset() throws IOException {
-        Rep<String> stringRep = rpc.timeLockToAsset("", "", "", "", "", "");
+        Rep<String> stringRep = rpc.timeLockToAsset("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5b15a29274c74cd7cae59cabf656873a0ea706ac", "0x5D6CD2FC", "0x5D945FFC", "0x1BC16D674EC80000");
         System.out.println(stringRep.getResult());
     }
 
