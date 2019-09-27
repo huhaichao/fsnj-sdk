@@ -15,7 +15,7 @@ import org.fsnj.jsonrpc.Rep;
 import org.junit.Test;
 
 public class RpcTest {
-    private static HttpProvider rpc = new HttpProvider("https://fsn.dev/api");
+    public static HttpProvider rpc = new HttpProvider("https://fsn.dev/api");
 
     //***************************fsn***************************
     @Test

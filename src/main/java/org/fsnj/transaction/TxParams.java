@@ -8,7 +8,7 @@ import lombok.Data;
 public class TxParams {
     private String ID;
     private String version;
-    private String nonce;
+    private int nonce;
     private double value;
     private int decimal;
     private double gasPrice;

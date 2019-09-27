@@ -9,7 +9,7 @@ public class TransactionFactory {
         return Transaction.builder()
                 .ID(params.getID())
                 .version(params.getVersion())
-                .nonce(HexUtil.doubleToHex(params.getNonce(),params.getDecimal()))
+                .nonce(Integer.toHexString(params.getNonce()))
                 .value(HexUtil.doubleToHex(params.getValue(),params.getDecimal()))
                 .gasPrice(HexUtil.doubleToHex(params.getGasPrice(),params.getDecimal()))
                 .gasLimit(HexUtil.doubleToHex(params.getGasLimit(),params.getDecimal()))
