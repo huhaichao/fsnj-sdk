@@ -9,13 +9,19 @@ import org.junit.Test;
 
 public class AccountTest {
 
-
+    /**
+     * 随机生成助记词
+     */
     @Test
     public void createSeed(){
        String seed =  Wallet.generateSeed();
        System.out.println(seed);
     }
 
+    /**
+     * 根据助记词生成地址
+     * @throws NoSuchAlgorithmException
+     */
     @Test
     public void createAccountBySeed() throws NoSuchAlgorithmException {
         String seed = "parrot total weird tower warm dog thought toe when monitor glass rifle mistake cool shed";
