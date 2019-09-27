@@ -27,6 +27,7 @@ public class AccountTest {
         String seed = "parrot total weird tower warm dog thought toe when monitor glass rifle mistake cool shed";
         Wallet wallet = new Wallet();
         Account account = wallet.createAccount(seed);
+        System.out.println(account.getPrivateKey());
         Assert.assertEquals("0x"+account.getAddress(),"0xde2a120f7abc67c6540c2f297981e2edc98bcb10");
     }
 
