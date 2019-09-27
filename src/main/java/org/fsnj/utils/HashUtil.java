@@ -1,6 +1,7 @@
 package org.fsnj.utils;
 
 import com.google.common.hash.Hashing;
+import org.bouncycastle.crypto.Digest;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 
 public class HashUtil {
@@ -8,6 +9,14 @@ public class HashUtil {
 
     public static byte[] sha256(byte[] bytes) {
         return Hashing.sha256().hashBytes(bytes).asBytes();
+    }
+
+    public static byte[] hash256(byte[] message, int ofs, int len) {
+        Digest d = new SHA256Digest();;
+        byte[] res = new byte[d.getDigestSize()];
+        d.update(message, ofs, len);
+        d.doFinal(res, 0);
+        return res;
     }
 
     public static byte[] sha3(byte[] bytes) {

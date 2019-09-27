@@ -3,9 +3,26 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.codec.binary.Hex;
 import org.ethereum.crypto.ECKey;
 import org.fsnj.account.Account;
+import org.fsnj.account.Wallet;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class AccountTest {
+
+
+    @Test
+    public void createSeed(){
+       String seed =  Wallet.generateSeed();
+       System.out.println(seed);
+    }
+
+    @Test
+    public void createAccountBySeed() throws NoSuchAlgorithmException {
+        String seed = "parrot total weird tower warm dog thought toe when monitor glass rifle mistake cool shed";
+        Wallet wallet = new Wallet();
+        Account account = wallet.createAccount(seed);
+        Assert.assertEquals("0x"+account.getAddress(),"0xde2a120f7abc67c6540c2f297981e2edc98bcb10");
+    }
 
     /**
      * 根据hex私钥生成离线地址

@@ -23,16 +23,14 @@ public class Account {
     }
 
     /**
-     * 创建地址
-     *
-     * @param privateKey hex格式私钥
+     * create account by privateKey
+     * @param privateKey
      * @throws NoSuchAlgorithmException
      */
     public Account(String privateKey) throws NoSuchAlgorithmException {
         this.ecKey = ECKey.fromPrivate(Hex.decode(privateKey));
         this.address =Hex.toHexString(ecKey.getAddress());
     }
-
 
     public String getPublicKey() {
         return ByteUtil.byteArrayToHexString(this.ecKey.getPubKey());
